@@ -67,6 +67,19 @@ class Transformer : public Branch {
         clock_ = static_cast<IntS>(clock_ % 12);
         // check tap bounds
         tap_pos_ = tap_limit(tap_pos_);
+
+        auto const [y_series, y_shunt, k] = transformer_params();
+        oratio_ = k;
+
+        double const base_y_to = base_i_to_ * base_i_to_ / base_power_1p;
+        // y_series = (1.0 / z_series) / base_y_to;
+
+        auto zseries = 1.0 / (y_series * base_y_to);
+        or1_ = zseries.real();
+        ox1_ = zseries.imag();
+        ob1_ = y_shunt.imag() * base_y_to;
+        og1_ = y_shunt.real() * base_y_to;
+        oshift_ = clock_ * deg_30;
     }
 
     // override getter
@@ -109,6 +122,34 @@ class Transformer : public Branch {
         return update_data;
     }
 
+    template <symmetry_tag sym>
+    BranchOutput<sym> get_output(BranchSolverOutput<sym> const& branch_solver_output) const {
+        // result object
+        BranchOutput<sym> output{};
+        static_cast<BaseOutput&>(output) = base_output(true);
+        // calculate result
+        output.p_from = base_power<sym> * real(branch_solver_output.s_f);
+        output.q_from = base_power<sym> * imag(branch_solver_output.s_f);
+        output.i_from = base_i_from() * cabs(branch_solver_output.i_f);
+        output.s_from = base_power<sym> * cabs(branch_solver_output.s_f);
+        output.p_to = base_power<sym> * real(branch_solver_output.s_t);
+        output.q_to = base_power<sym> * imag(branch_solver_output.s_t);
+        output.i_to = base_i_to() * cabs(branch_solver_output.i_t);
+        output.s_to = base_power<sym> * cabs(branch_solver_output.s_t);
+        double const max_s = std::max(sum_val(output.s_from), sum_val(output.s_to));
+        double const max_i = std::max(max_val(output.i_from), max_val(output.i_to));
+        output.loading = loading(max_s, max_i);
+
+        output.r1 = or1_;
+        output.x1 = ox1_;
+        output.b1 = ob1_;
+        output.g1 = og1_;
+        output.shift = oshift_;
+        output.ratio = oratio_;
+
+        return output;
+    }
+
   private:
     // transformer parameter
     double u1_;
@@ -132,6 +173,13 @@ class Transformer : public Branch {
     double uk_max_;
     double pk_min_;
     double pk_max_;
+
+    double or1_;
+    double ox1_;
+    double ob1_;
+    double og1_;
+    double oshift_;
+    double oratio_;
 
     // calculation parameter
     double base_i_from_;

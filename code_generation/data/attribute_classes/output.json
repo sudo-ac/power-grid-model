@@ -70,6 +70,18 @@
                         "s_to"
                     ],
                     "description": "power flow at to-side"
+                },
+                {
+                    "data_type": "double",
+                    "names": [
+                        "shift",
+                        "ratio",
+                        "r1",
+                        "x1",
+                        "b1",
+                        "g1"
+                    ],
+                    "description": "extra data"
                 }
             ]
         },

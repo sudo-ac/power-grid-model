@@ -55,6 +55,12 @@ struct BranchOutput {
     RealValue<sym> q_to{nan};  // power flow at to-side
     RealValue<sym> i_to{nan};  // power flow at to-side
     RealValue<sym> s_to{nan};  // power flow at to-side
+    double shift{nan};  // extra data
+    double ratio{nan};  // extra data
+    double r1{nan};  // extra data
+    double x1{nan};  // extra data
+    double b1{nan};  // extra data
+    double g1{nan};  // extra data
 
     // implicit conversions to BaseOutput
     operator BaseOutput&() { return reinterpret_cast<BaseOutput&>(*this); }

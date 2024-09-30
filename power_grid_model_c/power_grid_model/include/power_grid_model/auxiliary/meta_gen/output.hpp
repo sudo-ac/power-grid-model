@@ -52,7 +52,7 @@ template <symmetry_tag sym_type>
 struct get_attributes_list<BranchOutput<sym_type>> {
     using sym = sym_type;
 
-    static constexpr std::array<MetaAttribute, 11> value{
+    static constexpr std::array<MetaAttribute, 17> value{
             // all attributes including base class
             
             meta_data_gen::get_meta_attribute<&BranchOutput<sym>::id>(offsetof(BranchOutput<sym>, id), "id"),
@@ -66,6 +66,12 @@ struct get_attributes_list<BranchOutput<sym_type>> {
             meta_data_gen::get_meta_attribute<&BranchOutput<sym>::q_to>(offsetof(BranchOutput<sym>, q_to), "q_to"),
             meta_data_gen::get_meta_attribute<&BranchOutput<sym>::i_to>(offsetof(BranchOutput<sym>, i_to), "i_to"),
             meta_data_gen::get_meta_attribute<&BranchOutput<sym>::s_to>(offsetof(BranchOutput<sym>, s_to), "s_to"),
+            meta_data_gen::get_meta_attribute<&BranchOutput<sym>::shift>(offsetof(BranchOutput<sym>, shift), "shift"),
+            meta_data_gen::get_meta_attribute<&BranchOutput<sym>::ratio>(offsetof(BranchOutput<sym>, ratio), "ratio"),
+            meta_data_gen::get_meta_attribute<&BranchOutput<sym>::r1>(offsetof(BranchOutput<sym>, r1), "r1"),
+            meta_data_gen::get_meta_attribute<&BranchOutput<sym>::x1>(offsetof(BranchOutput<sym>, x1), "x1"),
+            meta_data_gen::get_meta_attribute<&BranchOutput<sym>::b1>(offsetof(BranchOutput<sym>, b1), "b1"),
+            meta_data_gen::get_meta_attribute<&BranchOutput<sym>::g1>(offsetof(BranchOutput<sym>, g1), "g1"),
     };
 };
 

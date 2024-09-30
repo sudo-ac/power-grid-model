@@ -59,6 +59,34 @@ class GenericBranch final : public Branch {
     double phase_shift() const override { return theta_; }
     bool is_param_mutable() const override { return false; }
 
+    template <symmetry_tag sym>
+    BranchOutput<sym> get_output(BranchSolverOutput<sym> const& branch_solver_output) const {
+        // result object
+        BranchOutput<sym> output{};
+        static_cast<BaseOutput&>(output) = base_output(true);
+        // calculate result
+        output.p_from = base_power<sym> * real(branch_solver_output.s_f);
+        output.q_from = base_power<sym> * imag(branch_solver_output.s_f);
+        output.i_from = base_i_from() * cabs(branch_solver_output.i_f);
+        output.s_from = base_power<sym> * cabs(branch_solver_output.s_f);
+        output.p_to = base_power<sym> * real(branch_solver_output.s_t);
+        output.q_to = base_power<sym> * imag(branch_solver_output.s_t);
+        output.i_to = base_i_to() * cabs(branch_solver_output.i_t);
+        output.s_to = base_power<sym> * cabs(branch_solver_output.s_t);
+        double const max_s = std::max(sum_val(output.s_from), sum_val(output.s_to));
+        double const max_i = std::max(max_val(output.i_from), max_val(output.i_to));
+        output.loading = loading(max_s, max_i);
+        output.shift = theta_;
+        output.ratio = k_;
+
+        output.r1 = r1_;
+        output.x1 = x1_;
+        output.b1 = b1_;
+        output.g1 = g1_;
+
+        return output;
+    }
+
   private:
     double sn_;
     double r1_;
